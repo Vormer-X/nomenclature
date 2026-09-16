@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СК-ТСМ — Заявка на материалы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        main {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 30px 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .content h3 {
+            color: #222;
+            font-size: 1.6rem;
+            font-weight: 600;
+            border-bottom: 3px solid #ff6a00;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* ======= Форма ввода ======= */
+        .appBar {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .appBar input,
+        .appBar select {
+            padding: 12px 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            background: white;
+            transition: 0.15s;
+        }
+
+        .appBar input:focus,
+        .appBar select:focus {
+            outline: none;
+            border-color: #ff6a00;
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.12);
+        }
+
+        .row-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row-group select {
+            max-width: 140px;
+            cursor: pointer;
+        }
+
+        .row-group input {
+            flex: 1;
+        }
+
+        /* ======= Список ======= */
+        .placeholder {
+            width: 100%;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px 22px;
+            min-height: 180px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .placeholder:empty::before,
+        .placeholder.empty::before {
+            content: "Здесь появятся добавленные позиции…";
+            color: #999;
+            font-weight: 400;
+            font-size: 0.95rem;
+            text-align: center;
+            margin: auto;
+        }
+
+        .group-title {
+            width: 100%;
+            font-weight: 700;
+            color: #ff6a00;
+            font-size: 1.05rem;
+            padding: 8px 4px 4px 4px;
+            border-bottom: 2px dashed #ffd0b0;
+            margin-top: 6px;
+        }
+
+        .record-item {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: 0.2s;
+            gap: 12px;
+        }
+
+        .record-item:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .record-info {
+            flex: 1;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .record-info .who {
+            color: #ff6a00;
+            font-weight: 700;
+        }
+
+        .btn-delete {
+            background: #ef5350;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.15s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #c62828;
+        }
+
+        /* ======= Нижние кнопки ======= */
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .functions {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 106, 0, 0.3);
+            min-width: 180px;
+        }
+
+        .functions:hover {
+            background: #e05e00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(255, 106, 0, 0.35);
+        }
+
+        .functions.excel {
+            background: #1e7e34;
+            box-shadow: 0 2px 8px rgba(30, 126, 52, 0.3);
+        }
+
+        .functions.excel:hover {
+            background: #166b2b;
+        }
+
+        .functions.danger {
+            background: #d32f2f;
+            box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+        }
+
+        .functions.danger:hover {
+            background: #b71c1c;
+        }
+
+        .functions:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ======= Адаптив ======= */
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            .content h3 {
+                font-size: 1.35rem;
+            }
+            .row-group {
+                flex-direction: column;
+            }
+            .row-group select {
+                max-width: 100%;
+            }
+            .functions {
+                min-width: 100%;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            .record-item {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="content">
+            <h3>Форма заявки на материалы</h3>
+
+            <div class="appBar">
+                <input id="userName" type="text" placeholder="Ваше имя">
+                <input id="object" type="text" placeholder="Укажите объект">
+                <input id="nomenclature" type="text" placeholder="Введите номенклатуру">
+                <div class="row-group">
+                    <input id="numeral" type="number" min="0" step="any" placeholder="Количество">
+                    <select id="type">
+                        <option value="шт">шт</option>
+                        <option value="кг">кг</option>
+                        <option value="л">л</option>
+                        <option value="м">м</option>
+                        <option value="м²">м²</option>
+                        <option value="м³">м³</option>
+                    </select>
+                </div>
+                <button class="functions" onclick="addData()">➕ Добавить в список</button>
+            </div>
+
+            <div id="List" class="placeholder empty"></div>
+
+            <div class="buttons">
+                <button class="functions excel" id="sendBtn" onclick="sendData()">📧 Отправить заявку</button>
+                <button class="functions danger" onclick="clearList()">🗑 Очистить</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Хранилище заявок: { userName, object, nomenclature, numeral, type, id }
+        let entries = [];
+        let nextId = 1;
+
+        const TARGET_EMAIL = 'vormer-x@mail.ru';
+
+        // =============== ДОБАВЛЕНИЕ ===============
+        function addData() {
+            const userNameEl = document.getElementById('userName');
+            const objectEl = document.getElementById('object');
+            const nomenclatureEl = document.getElementById('nomenclature');
+            const numeralEl = document.getElementById('numeral');
+            const typeEl = document.getElementById('type');
+
+            const userName = userNameEl.value.trim();
+            const object = objectEl.value.trim();
+            const nomenclature = nomenclatureEl.value.trim();
+            const numeral = numeralEl.value.trim();
+            const type = typeEl.value;
+
+            // Валидация
+            if (!userName) return alert('Укажите ваше имя');
+            if (!object) return alert('Укажите объект');
+            if (!nomenclature) return alert('Введите номенклатуру');
+            if (!numeral || Number(numeral) <= 0) return alert('Введите корректное количество');
+
+            entries.push({
+                id: nextId++,
+                userName,
+                object,
+                nomenclature,
+                numeral,
+                type
+            });
+
+            // Очищаем поля, но имя и объект оставляем — обычно добавляют несколько позиций
+            nomenclatureEl.value = '';
+            numeralEl.value = '';
+            nomenclatureEl.focus();
+
+            renderList();
+        }
+
+        // =============== ОТРИСОВКА СПИСКА ===============
+        function renderList() {
+            const list = document.getElementById('List');
+            list.innerHTML = '';
+
+            if (entries.length === 0) {
+                list.classList.add('empty');
+                return;
+            }
+            list.classList.remove('empty');
+
+            // Группировка по объекту
+            const groups = {};
+            entries.forEach(e => {
+                if (!groups[e.object]) groups[e.object] = [];
+                groups[e.object].push(e);
+            });
+
+            let counter = 1;
+            for (const obj in groups) {
+                const title = document.createElement('div');
+                title.className = 'group-title';
+                title.textContent = '🏗 Объект: ' + obj;
+                list.appendChild(title);
+
+                groups[obj].forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'record-item';
+
+                    const info = document.createElement('span');
+                    info.className = 'record-info';
+                    info.innerHTML =
+                        `${counter}) <span class="who">${escapeHtml(item.userName)}</span> — ` +
+                        `${escapeHtml(item.nomenclature)} <strong>${escapeHtml(item.numeral)} ${escapeHtml(item.type)}</strong>`;
+                    row.appendChild(info);
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn-delete';
+                    delBtn.textContent = '✕';
+                    delBtn.title = 'Удалить';
+                    delBtn.onclick = () => {
+                        entries = entries.filter(x => x.id !== item.id);
+                        renderList();
+                    };
+                    row.appendChild(delBtn);
+
+                    list.appendChild(row);
+                    counter++;
+                });
+            }
+        }
+
+        // =============== ОЧИСТКА ===============
+        function clearList() {
+            if (entries.length === 0) return;
+            if (!confirm('Очистить весь список заявок?')) return;
+            entries = [];
+            nextId = 1;
+            renderList();
+        }
+
+        // =============== ОТПРАВКА ПИСЬМА ===============
+        async function sendData() {
+            if (entries.length === 0) {
+                alert('Список пуст — добавьте хотя бы одну позицию');
+                return;
+            }
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Отправка…';
+
+            // Формируем человекочитаемый текст письма
+            const dateStr = new Date().toLocaleString('ru-RU');
+            let body = `Заявка на материалы от ${dateStr}\n\n`;
+
+            const groups = {};
+            entries.forEach(e => {
+                if (!groups[e.object]) groups[e.object] = [];
+                groups[e.object].push(e);
+            });
+
+            let counter = 1;
+            for (const obj in groups) {
+                body += `Объект: ${obj}\n`;
+                groups[obj].forEach(item => {
+                    body += `  ${counter}) ${item.userName} — ${item.nomenclature} ${item.numeral} ${item.type}\n`;
+                    counter++;
+                });
+                body += '\n';
+            }
+
+            // Уникальные имена отправителей
+            const senders = [...new Set(entries.map(e => e.userName))].join(', ');
+
+            try {
+                const response = await fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        _subject: 'Новая заявка на материалы — СК-ТСМ',
+                        _template: 'box',
+                        _captcha: 'false',
+                        'Отправитель(и)': senders,
+                        'Заявка': body
+                    })
+                });
+
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                const result = await response.json();
+                if (result.success === 'true' || result.success === true) {
+                    alert('✅ Заявка успешно отправлена на ' + TARGET_EMAIL);
+                } else {
+                    throw new Error('Сервис вернул ошибку');
+                }
+            } catch (err) {
+                console.error(err);
+                alert(
+                    '⚠️ Не удалось отправить письмо автоматически.\n' +
+                    'Открываем почтовый клиент как запасной вариант.\n\n' +
+                    'Ошибка: ' + err.message
+                );
+                // Fallback — mailto
+                const subject = encodeURIComponent('Новая заявка на материалы — СК-ТСМ');
+                const mailBody = encodeURIComponent(body);
+                window.location.href = `mailto:${TARGET_EMAIL}?subject=${subject}&body=${mailBody}`;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '📧 Отправить заявку';
+            }
+        }
+
+        // =============== Утилиты ===============
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Enter в полях — быстрый «Добавить»
+        document.querySelectorAll('.appBar input').forEach(el => {
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addData();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
